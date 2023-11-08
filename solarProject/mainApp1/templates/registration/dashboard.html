@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title  %}Dashboard{% endblock %}
+
+{% block content %}
+     <h1>Dashboard</h1>
+     Hello, {{user.username}}
+     
+    <p>{{user.
+      electrolist.power_Of_Load}}</p>
+    <a href="{% url 'electronicdetail_form'%}">Add Electronic Applications</a>
+    <p>You can change your password <a href="{% url 'password_change' %}">Here</a></p>
+    <a href="{% url 'logout' %}">Logout</a>
+    
+    <form action="" method="post">
+     {% csrf_token %}
+        {{form.as_p}}
+           
+     </form>
+{% endblock %}
+

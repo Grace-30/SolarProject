@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="{% url 'electronicdetails' %}">Go Back</a>
+<form method="POST" action="">
+{% csrf_token %}
+<p>Are you sure you want to delete this electronic application? "{{electronicdetail}}"</p>
+  <input type="submit" value="Delete">
+</form>
+{% endblock %}   

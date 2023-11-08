@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+{% for message in messages %}
+    <p>{{message}}</p>
+{% endfor %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{electroApp.as_p}}
+    {{electroDetails.as_p}}
+    <input type="submit" />
+    <p>Home page <a href="{% url 'logout' %}">Log-Out</a></p>
+    <!--<p>Your account has been successfully created. Now you can <a href="{% url 'login' %}">Log-in</a></p>-->
+</form>
+{% endblock %}
