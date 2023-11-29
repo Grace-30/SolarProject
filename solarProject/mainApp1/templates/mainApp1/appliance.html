@@ -5,4 +5,8 @@
 
 <h1>Electronics {{electroList}}</h1>
 <h2>hello</h2>
+{% for item in queryset %}
+            <li>Total Amount: {{ item.tot }}</li>
+            <!-- Access other annotated values as needed -->
+{% endfor %}
 {% endblock %}   

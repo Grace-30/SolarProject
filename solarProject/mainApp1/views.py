@@ -1,5 +1,6 @@
 from typing import Any
-from django.db.models import Sum, F
+from urllib import request
+from django.db.models import Sum, F, Subquery
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
@@ -63,19 +64,28 @@ def userInput(request):
              profile_form = UserInputForm(instance=request.user.userinput2) 
           return render(request,'registration/userInput.html',{'profile_form': profile_form})
 
-class ElectronicList(ListView):
+class ElectronicList(LoginRequiredMixin, ListView):
      model=  ElectronicDetail
      context_object_name = 'electroList'
 
      def get_context_data(self, **kwargs):
           context = super().get_context_data(**kwargs)
-          context['electroList'] = context['electroList'].filter(userF=self.request.user)
-          return context 
-     def get_context_data(self, **kwargs):
-          context = super().get_context_data(**kwargs)
-          context['electroList'] = ElectronicDetail.objects.annotate(totalPower=(F('no_Of_Load') * F('power_Of_Load')))
-          return context 
-     
+          #context['electroList'] = ElectronicDetail.objects.annotate(totalPower=(F('no_Of_Load') * F('power_Of_Load')), totalEnergy=(F('totalPower') * F('operating_Hours'))).filter(userF=self.request.user)
+          # Annotate the queryset
+          annotated_queryset = ElectronicDetail.objects.filter(userF=self.request.user).annotate(totalPower=F('no_Of_Load') * F('power_Of_Load'),totalEnergy=F('no_Of_Load') * F('power_Of_Load') * F('operating_Hours'))
+
+           # Aggregate the totalEnergy field
+          total_energy_aggregated = annotated_queryset.aggregate(totEnergy=Sum('totalEnergy'))
+          total_power_aggregated = annotated_queryset.aggregate(totPower=Sum('totalPower'))
+
+          # Add both to the context dictionary
+          context = {
+                      'electroList': annotated_queryset,
+                      'totalEnergyAggregated': total_energy_aggregated['totEnergy'],  # Access the aggregated value
+                      'totalPowerAggregated': total_power_aggregated['totPower']
+                     }
+          return context
+    
      
 class ElectronicsDetail(LoginRequiredMixin, DetailView):
      model= ElectronicDetail
